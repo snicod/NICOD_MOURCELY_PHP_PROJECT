@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block body %}
+    <h1>Edit Profile</h1>
+
+
+    {{ form_start(profileForm) }}
+        {{ form_row(profileForm.prenom) }}
+        {{ form_row(profileForm.nom) }}
+        {{ form_row(profileForm.email) }}
+        {{ form_row(profileForm.plainPassword, { label: 'New Password (leave blank to keep current password)' }) }}
+        <button type="submit" class="btn btn-primary">Save changes</button>
+    {{ form_end(profileForm) }}
+{% endblock %}

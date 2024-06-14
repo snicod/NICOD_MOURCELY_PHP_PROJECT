@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Event{% endblock %}
+
+{% block body %}
+    <h1>Edit Event</h1>
+
+    {{ form_start(eventForm) }}
+        {{ form_row(eventForm.titre) }}
+        {{ form_row(eventForm.description) }}
+        {{ form_row(eventForm.dateHeure) }}
+        {{ form_row(eventForm.nbParticipantMax) }}
+        {{ form_row(eventForm.publique) }}
+        <button type="submit" class="btn btn-primary">Save changes</button>
+    {{ form_end(eventForm) }}
+{% endblock %}

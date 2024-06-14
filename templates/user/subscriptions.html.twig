@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My Subscriptions{% endblock %}
+
+{% block body %}
+    <h1>My Subscriptions</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Date and Time</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in events %}
+                <tr>
+                    <td>{{ event.title }}</td>
+                    <td>{{ event.description }}</td>
+                    <td>{{ event.dateHeure|date('Y-m-d H:i') }}</td>
+                    <td>
+                        <form method="post" action="{{ path('event_unsubscribe', {id: event.id}) }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('unsubscribe' ~ event.id) }}">
+                            <button class="btn btn-danger">Unsubscribe</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

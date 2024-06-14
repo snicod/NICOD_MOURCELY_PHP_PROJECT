@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Home{% endblock %}
+
+{% block body %}
+    <h1>Public Events</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Date and Time</th>
+                <th>Max Participants</th>
+                <th>Creator</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in events %}
+                <tr>
+                    <td>{{ event.titre }}</td>
+                    <td>{{ event.description }}</td>
+                    <td>{{ event.dateHeure|date('Y-m-d H:i') }}</td>
+                    <td>{{ event.nbParticipantMax }}</td>
+                    <td>{{ event.creator.prenom }} {{ event.creator.nom }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
