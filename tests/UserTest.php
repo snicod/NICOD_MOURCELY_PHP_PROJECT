@@ -11,7 +11,7 @@ class UserTest extends TestCase
     {
         $user = new User();
         $user->setEmail('test@example.com');
-        $user->setPassword('password');
+        $user->setPassword('testtest');
         $user->setPrenom('John');
         $user->setNom('Doe');
 

@@ -11,6 +11,7 @@
                 <th>Title</th>
                 <th>Description</th>
                 <th>Date and Time</th>
+                <th>Publique</th>
                 <th>Max Participants</th>
                 <th>Remaining Places</th>
                 <th>Creator</th>
@@ -24,6 +25,7 @@
                     <td>{{ event.titre }}</td>
                     <td>{{ event.description }}</td>
                     <td>{{ event.dateHeure|date('Y-m-d H:i') }}</td>
+                    <td>{{ event.publique ? 'Yes' : 'No' }}</td>
                     <td>{{ event.nbParticipantMax }}</td>
                     <td>{{ event.getRemainingPlaces() }}</td>
                     <td>{{ event.creator.prenom }} {{ event.creator.nom }}</td>

@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Service\NotificationService;
 
 class EventController extends AbstractController
 {
@@ -21,6 +22,7 @@ class EventController extends AbstractController
             'events' => $events,
         ]);
     }
+
 
     #[Route('/event/new', name: 'event_new')]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
@@ -74,34 +76,50 @@ class EventController extends AbstractController
         return $this->redirectToRoute('event_index');
     }
 
-    #[Route('/event/{id}/subscribe', name: 'event_subscribe', methods: ['POST'])]
-    public function subscribe(Event $event, Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/event/{id}/subscribe', name: 'event_subscribe')]
+    public function subscribe(Event $event, EntityManagerInterface $entityManager, NotificationService $notificationService): Response
     {
         $user = $this->getUser();
-        if ($this->isCsrfTokenValid('subscribe'.$event->getId(), $request->request->get('_token')) && $event->getParticipants()->count() < $event->getNbParticipantMax() && !$event->getParticipants()->contains($user)) {
-            $event->addParticipant($user);
-            $entityManager->flush();
-        }
+        $event->addParticipant($user);
+        $entityManager->flush();
+
+        // Envoyer la notification par e-mail
+        $notificationService->sendEmail(
+            $user->getEmail(),
+            $user->getPrenom() . ' ' . $user->getNom(),
+            'Confirmation d\'inscription',
+            '<p>Vous êtes inscrit à l\'événement : ' . $event->getTitre() . '</p>'
+        );
 
         return $this->redirectToRoute('event_index');
     }
 
-    #[Route('/event/{id}/unsubscribe', name: 'event_unsubscribe', methods: ['POST'])]
-    public function unsubscribe(Event $event, Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/event/{id}/unsubscribe', name: 'event_unsubscribe')]
+    public function unsubscribe(Event $event, EntityManagerInterface $entityManager, NotificationService $notificationService): Response
     {
         $user = $this->getUser();
-        if ($this->isCsrfTokenValid('unsubscribe'.$event->getId(), $request->request->get('_token')) && $event->getParticipants()->contains($user)) {
-            $event->removeParticipant($user);
-            $entityManager->flush();
-        }
+        $event->removeParticipant($user);
+        $entityManager->flush();
+
+        // Envoyer la notification par e-mail
+        $notificationService->sendEmail(
+            $user->getEmail(),
+            $user->getPrenom() . ' ' . $user->getNom(),
+            'Annulation d\'inscription',
+            '<p>Vous avez annulé votre inscription à l\'événement : ' . $event->getTitre() . '</p>'
+        );
 
         return $this->redirectToRoute('event_index');
     }
-
-    #[Route('/subscriptions', name: 'event_subscriptions')]
+    #[Route('/subscriptions', name: 'subscriptions')]
     public function subscriptions(EntityManagerInterface $entityManager): Response
     {
         $user = $this->getUser();
+
+        if (!$user) {
+            throw $this->createAccessDeniedException('Vous devez être connecté pour voir cette page.');
+        }
+
         $events = $user->getEvents();
 
         return $this->render('event/subscriptions.html.twig', [
